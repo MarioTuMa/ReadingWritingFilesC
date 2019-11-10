@@ -4,6 +4,16 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+
+int rngesus(int randomDataFile){
+  int randNum=0;
+  int *buff=&randNum;
+  if(read(randomDataFile, buff, sizeof(int))<0){
+    printf("%s\n",strerror(errno));
+  }
+  return randNum;
+}
+
 int main(){
   int randomDataFile = open("/dev/random", O_RDONLY);
   if(randomDataFile<0){
@@ -14,14 +24,7 @@ int main(){
   int randos[10];
   int i;
   for(i=0;i<10;i++){
-    int randNum=0;
-    int *buff=&randNum;
-    if(read(randomDataFile, buff, sizeof(int))<0){
-      printf("%s\n",strerror(errno));
-      return errno;
-    }
-    printf("%d\n",randNum);
-    randos[i]=randNum;
+    randos[i]=rngesus(randomDataFile);
   }
   if(close(randomDataFile)<0){
     printf("%s\n",strerror(errno));
@@ -47,7 +50,9 @@ int main(){
     return errno;
   }
   for(i=0;i<10;i++){
+    printf("%d: ",i);
     printf("Read %d from random file, and %d from file I made\n",randos[i],randos2[i]);
   }
-  return 0;
+  //printf("made it here %d \n",errno);
+  return close(fileToReadFrom);
 }
